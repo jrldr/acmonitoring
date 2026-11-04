@@ -118,22 +118,24 @@ export const Header: React.FC<HeaderProps> = ({
             {!isInstalled && isInstallable && (
               <button
                 onClick={install}
-                className="hidden md:inline-flex items-center gap-1.5 min-h-[40px] px-3 py-1.5 text-xs font-semibold rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition-colors whitespace-nowrap"
+                className="inline-flex items-center justify-center gap-1.5 min-h-[40px] px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition-colors whitespace-nowrap active:scale-95"
                 title="Install Progressive Web App"
+                aria-label="Install App"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>Install</span>
+                <span className="hidden sm:inline">Install</span>
               </button>
             )}
 
             {!isInstalled && isIOS && (
               <button
                 onClick={onOpenIOSGuide}
-                className="hidden md:inline-flex items-center gap-1.5 min-h-[40px] px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors whitespace-nowrap"
+                className="inline-flex items-center justify-center gap-1.5 min-h-[40px] px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors whitespace-nowrap active:scale-95"
                 title="Install on iOS"
+                aria-label="Install on iOS"
               >
                 <Smartphone className="w-3.5 h-3.5" />
-                <span>Install</span>
+                <span className="hidden sm:inline">Install</span>
               </button>
             )}
 

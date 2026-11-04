@@ -14,15 +14,16 @@ export default defineConfig(() => {
         registerType: 'autoUpdate',
         includeAssets: ['icon-192.png', 'icon-512.png', 'apple-touch-icon.png'],
         manifest: {
-          id: '/',
+          id: './',
           name: 'AC Dashboard — Power Tracker',
           short_name: 'AC Dashboard',
           description: 'Smart air conditioner electricity consumption monitor, kWh billing calculator, and historical power tracking dashboard.',
           theme_color: '#6366f1',
           background_color: '#090d16',
           display: 'standalone',
-          start_url: '/',
-          scope: '/',
+          orientation: 'portrait-primary',
+          start_url: './',
+          scope: './',
           icons: [
             {
               src: 'icon-192.png',
@@ -31,10 +32,22 @@ export default defineConfig(() => {
               purpose: 'any',
             },
             {
+              src: 'icon-192.png',
+              sizes: '192x192',
+              type: 'image/png',
+              purpose: 'maskable',
+            },
+            {
               src: 'icon-512.png',
               sizes: '512x512',
               type: 'image/png',
               purpose: 'any',
+            },
+            {
+              src: 'icon-512.png',
+              sizes: '512x512',
+              type: 'image/png',
+              purpose: 'maskable',
             },
           ],
         },

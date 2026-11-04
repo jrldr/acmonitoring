@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, Share, PlusSquare } from 'lucide-react';
+import { AppLogo } from './AppLogo';
 
 interface PWAInstallModalProps {
   isOpen: boolean;
@@ -20,7 +21,7 @@ export const PWAInstallModal: React.FC<PWAInstallModalProps> = ({ isOpen, onClos
         </button>
 
         <div className="flex items-center gap-3 mb-4">
-          <img src="/icon-192.png" alt="App icon" className="w-10 h-10 rounded-xl" />
+          <AppLogo size="md" />
           <div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white">Install AC Dashboard</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">Add to your iPhone or iPad home screen</p>
