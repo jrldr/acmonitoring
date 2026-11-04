@@ -1,0 +1,6 @@
+{
+  "name": "AC Dashboard — Power Tracker",
+  "description": "Smart air conditioner electricity consumption monitor, kWh billing calculator, and historical power tracking dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
