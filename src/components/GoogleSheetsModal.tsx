@@ -7,7 +7,6 @@ import {
   ExternalLink,
   CloudUpload,
   CloudDownload,
-  AlertCircle,
   HelpCircle,
   Zap,
 } from 'lucide-react';
@@ -72,23 +71,27 @@ export const GoogleSheetsModal: React.FC<GoogleSheetsModalProps> = ({
   const isConnected = isValidScriptUrl(scriptUrl);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
-      <div className="w-full max-w-xl rounded-2xl bg-white dark:bg-[#111827] shadow-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-7 relative transition-all my-8 max-h-[90vh] overflow-y-auto scrollbar-thin">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 overflow-y-auto">
+      <div className="w-full max-w-xl rounded-t-3xl sm:rounded-2xl bg-white dark:bg-[#111827] shadow-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-7 relative transition-all max-h-[92vh] overflow-y-auto scrollbar-thin pb-safe">
+        {/* Mobile Grab Handle */}
+        <div className="sm:hidden w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto -mt-1 mb-4" />
+
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors"
+          className="absolute right-4 top-4 min-h-[44px] min-w-[44px] rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors"
+          aria-label="Close modal"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Modal Header */}
-        <div className="flex items-center gap-3 mb-5 pb-3 border-b border-slate-100 dark:border-slate-800">
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 shadow-xs">
+        <div className="flex items-center gap-3 mb-5 pb-3 border-b border-slate-100 dark:border-slate-800 pr-10">
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
             <FileSpreadsheet className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
               Google Sheets Cloud Sync
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -115,7 +118,7 @@ export const GoogleSheetsModal: React.FC<GoogleSheetsModalProps> = ({
                 type="button"
                 onClick={onPullFromSheet}
                 disabled={isSyncing}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
+                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1 min-h-[44px] px-3 py-2 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 text-xs"
                 title="Download all records from your Google Sheet"
               >
                 <CloudDownload className="w-3.5 h-3.5" />
@@ -125,7 +128,7 @@ export const GoogleSheetsModal: React.FC<GoogleSheetsModalProps> = ({
                 type="button"
                 onClick={onPushToSheet}
                 disabled={isSyncing}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors disabled:opacity-50 shadow-xs"
+                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1 min-h-[44px] px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors disabled:opacity-50 shadow-xs text-xs"
                 title="Save current records into your Google Sheet"
               >
                 <CloudUpload className="w-3.5 h-3.5" />
@@ -140,7 +143,7 @@ export const GoogleSheetsModal: React.FC<GoogleSheetsModalProps> = ({
               <span>Permanent Cloud Backup for Free</span>
             </div>
             <p className="text-slate-600 dark:text-slate-300 text-[11px] mt-1 leading-relaxed">
-              Connect this app to your own personal Google Sheet via a free 1-minute Google Apps Script Web App. Your records will stay safely stored in Google Drive forever—even if you clear your browser history or switch phones!
+              Connect this app to your own personal Google Sheet via a free Google Apps Script Web App. Your records will stay safely stored in Google Drive forever—even if you clear your browser history or switch phones!
             </p>
           </div>
         )}
@@ -151,7 +154,7 @@ export const GoogleSheetsModal: React.FC<GoogleSheetsModalProps> = ({
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Google Apps Script Web App URL
             </label>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="url"
                 required
@@ -161,11 +164,11 @@ export const GoogleSheetsModal: React.FC<GoogleSheetsModalProps> = ({
                   setUrlInput(e.target.value);
                   setError(null);
                 }}
-                className="flex-1 px-3 py-2 text-xs font-mono rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="flex-1 min-h-[44px] px-3.5 py-2 text-xs font-mono rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               <button
                 type="submit"
-                className="px-4 py-2 text-xs font-semibold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors shrink-0"
+                className="min-h-[44px] px-5 py-2 text-xs font-semibold rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition-colors shrink-0"
               >
                 Save URL
               </button>
@@ -175,20 +178,20 @@ export const GoogleSheetsModal: React.FC<GoogleSheetsModalProps> = ({
 
           {/* Auto-Sync Setting */}
           {isConnected && (
-            <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs">
-              <div>
+            <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs">
+              <div className="pr-3">
                 <span className="font-semibold text-slate-900 dark:text-white block">
                   Automatic Sync
                 </span>
                 <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Automatically update your Google Sheet whenever you add, edit, or delete a cycle.
+                  Automatically sync to Google Sheet when adding, editing, or deleting a cycle.
                 </span>
               </div>
               <input
                 type="checkbox"
                 checked={autoSync}
                 onChange={(e) => onToggleAutoSync(e.target.checked)}
-                className="w-4 h-4 accent-indigo-600 cursor-pointer"
+                className="w-5 h-5 accent-indigo-600 cursor-pointer shrink-0"
               />
             </div>
           )}
@@ -199,11 +202,11 @@ export const GoogleSheetsModal: React.FC<GoogleSheetsModalProps> = ({
           <button
             type="button"
             onClick={() => setShowGuide(!showGuide)}
-            className="flex items-center justify-between w-full text-xs font-bold text-slate-800 dark:text-slate-200 mb-3"
+            className="flex items-center justify-between w-full min-h-[40px] text-xs font-bold text-slate-800 dark:text-slate-200 mb-3"
           >
             <span className="flex items-center gap-1.5">
               <HelpCircle className="w-4 h-4 text-indigo-500" />
-              <span>How to create your free Google Sheet sync (1 minute)</span>
+              <span>Free Setup Guide (1 minute)</span>
             </span>
             <span className="text-indigo-600 text-[11px]">
               {showGuide ? 'Hide Steps' : 'Show Steps'}
@@ -238,16 +241,16 @@ export const GoogleSheetsModal: React.FC<GoogleSheetsModalProps> = ({
                 </span>
                 <div className="w-full">
                   <p className="mb-2">
-                    In the Google Sheet menu, click <strong>Extensions &gt; Apps Script</strong>. Delete any code in the editor, and paste the code below:
+                    In the Google Sheet menu, click <strong>Extensions &gt; Apps Script</strong>. Replace any code with:
                   </p>
-                  <div className="relative">
+                  <div>
                     <button
                       type="button"
                       onClick={handleCopyCode}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-colors shadow-xs"
+                      className="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-colors shadow-xs"
                     >
-                      {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copied ? 'Code Copied to Clipboard!' : 'Copy Apps Script Code'}</span>
+                      {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      <span>{copied ? 'Code Copied!' : 'Copy Apps Script Code'}</span>
                     </button>
                   </div>
                 </div>
@@ -264,10 +267,10 @@ export const GoogleSheetsModal: React.FC<GoogleSheetsModalProps> = ({
                   <ul className="list-disc list-inside mt-1 space-y-0.5 text-slate-500 dark:text-slate-400 text-[11px]">
                     <li>Select type: <strong>Web app</strong></li>
                     <li>Execute as: <strong>Me</strong></li>
-                    <li>Who has access: <strong>Anyone</strong> (allows the AC app to talk to it)</li>
+                    <li>Who has access: <strong>Anyone</strong></li>
                   </ul>
                   <p className="mt-1">
-                    Click <strong>Deploy</strong>, authorize when prompted, copy the <strong>Web App URL</strong>, and paste it in the box above!
+                    Click <strong>Deploy</strong>, authorize, and paste your <strong>Web App URL</strong> above!
                   </p>
                 </div>
               </div>

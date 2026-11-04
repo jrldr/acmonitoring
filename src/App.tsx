@@ -3,6 +3,7 @@ import { ACRecord, RecordInput, ViewTab } from './types';
 import { INITIAL_RECORDS } from './data/initialData';
 import { recalculateAllRecords } from './utils/calculations';
 import { Header } from './components/Header';
+import { MobileBottomNav } from './components/MobileBottomNav';
 import { StatCards } from './components/StatCards';
 import { TrendChart } from './components/TrendChart';
 import { LedgerTable } from './components/LedgerTable';
@@ -279,7 +280,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#090d16] text-slate-900 dark:text-slate-100 transition-colors flex flex-col font-sans">
-      {/* Top Bar Contract Navigation */}
+      {/* Top Bar Navigation */}
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -297,7 +298,7 @@ export default function App() {
 
       {/* Floating Sync Feedback Toast */}
       {syncToast && (
-        <div className="fixed top-18 right-4 z-50 max-w-sm p-3.5 rounded-xl bg-white dark:bg-slate-800 shadow-xl border border-slate-200 dark:border-slate-700 flex items-start gap-2.5 text-xs animate-in slide-in-from-top-2 duration-200">
+        <div className="fixed top-16 sm:top-18 right-3 sm:right-4 z-50 max-w-xs sm:max-w-sm p-3.5 rounded-2xl bg-white dark:bg-slate-800 shadow-2xl border border-slate-200 dark:border-slate-700 flex items-start gap-2.5 text-xs animate-in slide-in-from-top-2 duration-200">
           {syncToast.type === 'success' ? (
             <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
           ) : (
@@ -307,8 +308,8 @@ export default function App() {
         </div>
       )}
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 md:pb-12">
+      {/* Main Responsive Content Container */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6 pb-28 lg:pb-12">
         {activeTab === 'dashboard' && (
           <div>
             {/* 5 KPI Stat Cards */}
@@ -318,24 +319,24 @@ export default function App() {
             <TrendChart records={records} onSelectRecord={(r) => setViewingRecord(r)} />
 
             {/* Recent Billing Cycles Quick Table + Estimator Callout */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
               {/* Recent Records (7 cols) */}
-              <div className="lg:col-span-7 rounded-xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm">
+              <div className="lg:col-span-7 rounded-2xl bg-white dark:bg-[#101726] border border-slate-200/90 dark:border-slate-800/80 p-4 sm:p-6 shadow-xs">
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 dark:border-slate-800/80">
                   <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                    Recent Cycles
+                    Recent Billing Cycles
                   </h3>
                   <button
                     onClick={() => setActiveTab('ledger')}
-                    className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 flex items-center gap-1"
+                    className="min-h-[36px] text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 flex items-center gap-1 py-1"
                   >
-                    <span>View all {records.length} in ledger</span>
+                    <span>View all {records.length}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
 
                 <div className="overflow-x-auto scrollbar-thin">
-                  <table className="w-full text-xs text-left">
+                  <table className="w-full text-xs text-left min-w-[320px]">
                     <thead>
                       <tr className="border-b border-slate-200 dark:border-slate-800 text-[10px] font-semibold text-slate-400 uppercase">
                         <th className="py-2">Month</th>
@@ -363,7 +364,7 @@ export default function App() {
                           <td className="py-2.5 text-center">
                             <button
                               onClick={() => setViewingRecord(r)}
-                              className="text-[11px] font-sans font-medium px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100"
+                              className="min-h-[32px] text-[11px] font-sans font-medium px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100"
                             >
                               View
                             </button>
@@ -376,7 +377,7 @@ export default function App() {
               </div>
 
               {/* Quick Estimator Card (5 cols) */}
-              <div className="lg:col-span-5 rounded-xl bg-gradient-to-br from-indigo-50 to-white dark:from-[#131b2e] dark:to-[#111827] border border-indigo-100 dark:border-slate-800 p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+              <div className="lg:col-span-5 rounded-2xl bg-gradient-to-br from-indigo-50/70 via-white to-white dark:from-[#131b2e] dark:via-[#101726] dark:to-[#101726] border border-indigo-100/80 dark:border-slate-800 p-5 sm:p-6 shadow-xs flex flex-col justify-between">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
                     Live Simulator
@@ -385,16 +386,16 @@ export default function App() {
                     Calculate AC Running Costs
                   </h3>
                   <p className="text-xs text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
-                    Test different temperature settings, compressor horsepowers, and daily operating hours to see how much you can shave off your next monthly statement.
+                    Test different temperature settings, compressor horsepowers, and operating hours to see how much you can save on your next electricity bill.
                   </p>
                 </div>
 
                 <div className="mt-5 pt-4 border-t border-indigo-100 dark:border-slate-800">
                   <button
                     onClick={() => setActiveTab('estimator')}
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-colors"
+                    className="w-full min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-colors active:scale-98"
                   >
-                    <span>Open Power & Cost Estimator</span>
+                    <span>Open Power &amp; Cost Estimator</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -428,17 +429,27 @@ export default function App() {
         {activeTab === 'estimator' && <CostEstimator latestRate={latestRate} />}
       </main>
 
-      {/* Floating Action Button on Mobile */}
+      {/* Floating Action Button on Mobile (Positioned above bottom nav) */}
       <button
         onClick={() => {
           setEditingRecord(null);
           setIsRecordModalOpen(true);
         }}
-        className="md:hidden fixed bottom-6 right-6 w-14 h-14 rounded-full bg-indigo-600 text-white shadow-xl shadow-indigo-600/40 flex items-center justify-center z-40 active:scale-95 transition-transform"
+        className="lg:hidden fixed bottom-20 right-4 w-13 h-13 rounded-full bg-indigo-600 text-white shadow-xl shadow-indigo-600/40 flex items-center justify-center z-30 active:scale-90 transition-transform"
         aria-label="Add new billing record"
       >
         <Plus className="w-6 h-6" />
       </button>
+
+      {/* Mobile Fixed Bottom Navigation Bar (Pattern 1) */}
+      <MobileBottomNav
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onOpenNewEntry={() => {
+          setEditingRecord(null);
+          setIsRecordModalOpen(true);
+        }}
+      />
 
       {/* Record Add / Edit Modal */}
       <RecordModal

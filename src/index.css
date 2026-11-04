@@ -17,6 +17,14 @@
   font-variant-numeric: tabular-nums;
 }
 
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 12px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
 /* Custom scrollbars for clean look */
 ::-webkit-scrollbar {
   width: 6px;
