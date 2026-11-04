@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { formatCurrency, formatKwh } from '../utils/calculations';
-import { Sliders, Zap, DollarSign, Thermometer, Clock, Sparkles } from 'lucide-react';
+import { Sliders, Zap, Thermometer, Clock, Sparkles } from 'lucide-react';
 
 interface CostEstimatorProps {
   latestRate: number;
@@ -34,33 +34,37 @@ export const CostEstimator: React.FC<CostEstimatorProps> = ({ latestRate }) => {
   const monthlyCost = monthlyKwh * customRate;
   const yearlyCost = monthlyCost * 12;
 
-  // Comparison: What if user uses 2 fewer hours or raises temp by 1°C
+  // Comparison: What if user uses 2 fewer hours
   const monthlyKwhSaved2Hours = effectivePowerKw * 2 * 30;
   const monthlySavings2Hours = monthlyKwhSaved2Hours * customRate;
 
+  // Comparison: What if user increases temp by 1°C
+  const monthlySavings1Degree = monthlyCost * 0.06;
+
   return (
-    <div className="rounded-xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 sm:p-6 mb-6 transition-colors shadow-sm">
+    <div className="rounded-2xl bg-white dark:bg-[#101726] border border-slate-200/90 dark:border-slate-800/80 p-5 sm:p-7 mb-6 transition-colors shadow-xs">
+      {/* Header */}
       <div className="mb-6 pb-4 border-b border-slate-100 dark:border-slate-800/80">
         <div className="flex items-center gap-2">
           <Sliders className="w-5 h-5 text-indigo-500" />
           <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
-            AC Power & Cost Estimator
+            Power &amp; Billing Cost Simulator
           </h2>
         </div>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-          Simulate how daily hours, room temperature, and AC capacity impact your monthly electricity bill.
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          Adjust operating parameters to project your AC electrical consumption and monthly statement impact.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Sliders and Controls (7 cols) */}
-        <div className="lg:col-span-7 space-y-5">
+        <div className="lg:col-span-7 space-y-6">
           {/* Daily Usage Slider */}
           <div>
             <div className="flex justify-between items-center text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
               <span className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-indigo-500" />
-                Daily Usage Hours
+                <Clock className="w-4 h-4 text-indigo-500" />
+                <span>Daily Operating Hours</span>
               </span>
               <span className="font-mono text-sm text-indigo-600 dark:text-indigo-400 font-bold tabular-nums">
                 {hoursPerDay} {hoursPerDay === 1 ? 'Hour' : 'Hours'} / day
@@ -75,20 +79,20 @@ export const CostEstimator: React.FC<CostEstimatorProps> = ({ latestRate }) => {
               onChange={(e) => setHoursPerDay(Number(e.target.value))}
               className="w-full accent-indigo-600 cursor-pointer h-2 bg-slate-200 dark:bg-slate-700 rounded-lg"
             />
-            <div className="flex justify-between text-[10px] text-slate-400 mt-1 font-mono">
+            <div className="flex justify-between text-[10px] text-slate-400 mt-1.5 font-mono">
               <span>1 hr</span>
-              <span>8 hrs (Night)</span>
+              <span>8 hrs (Night Sleep)</span>
               <span>16 hrs</span>
-              <span>24 hrs (Continuous)</span>
+              <span>24 hrs (Full Continuous)</span>
             </div>
           </div>
 
           {/* AC Capacity Preset */}
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
-              AC Horsepower / Wattage Rating
+              Compressor Capacity Rating
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               {[
                 { label: '0.75 HP (560W)', watts: 560 },
                 { label: '1.0 HP (750W)', watts: 750 },
@@ -99,10 +103,10 @@ export const CostEstimator: React.FC<CostEstimatorProps> = ({ latestRate }) => {
                   key={p.watts}
                   type="button"
                   onClick={() => setRatedWatts(p.watts)}
-                  className={`px-2.5 py-2 text-xs rounded-lg border text-center transition-all ${
+                  className={`px-3 py-2 text-xs rounded-xl border text-center transition-all ${
                     ratedWatts === p.watts
-                      ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs'
-                      : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-slate-300'
+                      ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold shadow-2xs'
+                      : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700'
                   }`}
                 >
                   {p.label}
@@ -112,20 +116,20 @@ export const CostEstimator: React.FC<CostEstimatorProps> = ({ latestRate }) => {
           </div>
 
           {/* Inverter Toggle & Temperature Slider */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {/* Inverter Option */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                Compressor Type
+                Compressor Technology
               </label>
-              <div className="flex rounded-lg bg-slate-100 dark:bg-slate-800 p-1">
+              <div className="flex rounded-xl bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200/60 dark:border-slate-800/80 p-1">
                 <button
                   type="button"
                   onClick={() => setIsInverter(true)}
-                  className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                  className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all ${
                     isInverter
                       ? 'bg-white dark:bg-indigo-600 text-slate-900 dark:text-white shadow-xs'
-                      : 'text-slate-600 dark:text-slate-400'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   Inverter (Variable)
@@ -133,10 +137,10 @@ export const CostEstimator: React.FC<CostEstimatorProps> = ({ latestRate }) => {
                 <button
                   type="button"
                   onClick={() => setIsInverter(false)}
-                  className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                  className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all ${
                     !isInverter
                       ? 'bg-white dark:bg-indigo-600 text-slate-900 dark:text-white shadow-xs'
-                      : 'text-slate-600 dark:text-slate-400'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   Non-Inverter (Fixed)
@@ -147,9 +151,9 @@ export const CostEstimator: React.FC<CostEstimatorProps> = ({ latestRate }) => {
             {/* Target Temperature */}
             <div>
               <div className="flex justify-between items-center text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                <span className="flex items-center gap-1">
-                  <Thermometer className="w-3.5 h-3.5 text-amber-500" />
-                  Thermostat Temp
+                <span className="flex items-center gap-1.5">
+                  <Thermometer className="w-4 h-4 text-amber-500" />
+                  <span>Thermostat Setting</span>
                 </span>
                 <span className="font-mono text-sm text-indigo-600 dark:text-indigo-400 font-bold tabular-nums">
                   {tempSetting}°C
@@ -164,23 +168,20 @@ export const CostEstimator: React.FC<CostEstimatorProps> = ({ latestRate }) => {
                 onChange={(e) => setTempSetting(Number(e.target.value))}
                 className="w-full accent-indigo-600 cursor-pointer h-2 bg-slate-200 dark:bg-slate-700 rounded-lg"
               />
-              <div className="flex justify-between text-[10px] text-slate-400 mt-1 font-mono">
-                <span>18°C (Max power)</span>
+              <div className="flex justify-between text-[10px] text-slate-400 mt-1.5 font-mono">
+                <span>18°C (High draw)</span>
                 <span>24°C (Eco balance)</span>
                 <span>28°C</span>
               </div>
             </div>
           </div>
 
-          {/* Electricity Rate */}
+          {/* Electricity Tariff Rate */}
           <div>
             <div className="flex justify-between items-center text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
-              <span className="flex items-center gap-1">
-                <DollarSign className="w-3.5 h-3.5 text-emerald-500" />
-                Electricity Tariff Rate (₱ per kWh)
-              </span>
+              <span>Electricity Tariff Rate (₱ per kWh)</span>
               <span className="font-mono text-xs text-slate-500 tabular-nums">
-                Current: ₱{customRate.toFixed(2)}/kWh
+                Current cycle baseline: ₱{customRate.toFixed(2)}/kWh
               </span>
             </div>
             <input
@@ -188,32 +189,32 @@ export const CostEstimator: React.FC<CostEstimatorProps> = ({ latestRate }) => {
               step="0.01"
               value={customRate}
               onChange={(e) => setCustomRate(Math.max(1, Number(e.target.value)))}
-              className="w-full px-3 py-2 text-sm font-mono rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3.5 py-2 text-sm font-mono rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
         </div>
 
         {/* Results Card (5 cols) */}
-        <div className="lg:col-span-5 flex flex-col justify-between rounded-xl bg-gradient-to-br from-indigo-50 to-slate-50 dark:from-indigo-950/30 dark:to-slate-900/60 border border-indigo-100 dark:border-indigo-900/40 p-5">
+        <div className="lg:col-span-5 flex flex-col justify-between rounded-2xl bg-gradient-to-br from-indigo-50/70 via-slate-50 to-white dark:from-indigo-950/20 dark:via-slate-900/60 dark:to-[#101726] border border-indigo-100/90 dark:border-slate-800 p-6">
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
               <Zap className="w-4 h-4" />
-              Projected AC Bill Impact
+              <span>Projected Statement Impact</span>
             </span>
 
             {/* Monthly Estimated Bill */}
-            <div className="mt-4 pb-4 border-b border-indigo-200/50 dark:border-indigo-900/60">
-              <span className="text-xs text-slate-500 dark:text-slate-400">Monthly Cost Estimate (30 days)</span>
-              <div className="text-3xl sm:text-4xl font-extrabold text-indigo-600 dark:text-indigo-400 tabular-nums font-mono mt-1">
+            <div className="mt-4 pb-5 border-b border-indigo-100 dark:border-slate-800">
+              <span className="text-xs text-slate-500 dark:text-slate-400">Monthly Projected Cost (30-day cycle)</span>
+              <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tabular-nums font-mono mt-1">
                 {formatCurrency(monthlyCost)}
               </div>
               <span className="text-xs text-slate-500 dark:text-slate-400 mt-1 block">
-                Approx. <strong className="font-mono text-slate-700 dark:text-slate-200">{formatKwh(monthlyKwh)} kWh</strong> / month
+                Estimated consumption: <strong className="font-mono text-slate-700 dark:text-slate-200">{formatKwh(monthlyKwh)} kWh</strong>
               </span>
             </div>
 
-            {/* Breakdown */}
-            <div className="mt-4 space-y-2.5 text-xs">
+            {/* Detailed Cost Breakdown */}
+            <div className="mt-4 space-y-3 text-xs">
               <div className="flex justify-between text-slate-600 dark:text-slate-300">
                 <span>Daily Power Usage:</span>
                 <span className="font-mono font-semibold tabular-nums text-slate-900 dark:text-white">
@@ -221,13 +222,13 @@ export const CostEstimator: React.FC<CostEstimatorProps> = ({ latestRate }) => {
                 </span>
               </div>
               <div className="flex justify-between text-slate-600 dark:text-slate-300">
-                <span>Daily Cost:</span>
+                <span>Daily Running Cost:</span>
                 <span className="font-mono font-semibold tabular-nums text-slate-900 dark:text-white">
                   {formatCurrency(dailyCost)} / day
                 </span>
               </div>
               <div className="flex justify-between text-slate-600 dark:text-slate-300">
-                <span>Annualized Cost:</span>
+                <span>Annualized Total (12 cycles):</span>
                 <span className="font-mono font-semibold tabular-nums text-slate-900 dark:text-white">
                   {formatCurrency(yearlyCost)} / year
                 </span>
@@ -235,18 +236,21 @@ export const CostEstimator: React.FC<CostEstimatorProps> = ({ latestRate }) => {
             </div>
           </div>
 
-          {/* Quick Efficiency Tip */}
-          <div className="mt-5 p-3 rounded-lg bg-white/80 dark:bg-slate-900/80 border border-indigo-100 dark:border-indigo-900/50 text-[11px] text-slate-600 dark:text-slate-300">
-            <div className="flex items-center gap-1.5 font-semibold text-indigo-600 dark:text-indigo-400 mb-1">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Optimization Insight</span>
+          {/* Efficiency Insight Callout */}
+          <div className="mt-6 p-4 rounded-xl bg-white/90 dark:bg-slate-900/90 border border-indigo-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 space-y-2">
+            <div className="flex items-center gap-1.5 font-bold text-indigo-600 dark:text-indigo-400">
+              <Sparkles className="w-4 h-4 shrink-0" />
+              <span>Energy Saving Optimization</span>
             </div>
-            <p>
-              Turning off AC <strong>2 hours earlier</strong> each day saves approx{' '}
+            <p className="leading-relaxed">
+              Shutting off the AC <strong>2 hours earlier</strong> each day reduces your statement by approx{' '}
               <strong className="text-emerald-600 dark:text-emerald-400 font-mono font-bold">
                 {formatCurrency(monthlySavings2Hours)}
               </strong>{' '}
-              every month ({formatKwh(monthlyKwhSaved2Hours)} kWh).
+              per month ({formatKwh(monthlyKwhSaved2Hours)} kWh saved).
+            </p>
+            <p className="leading-relaxed text-[11px] text-slate-500 dark:text-slate-400">
+              Increasing thermostat from 22°C to 24°C saves an additional ~{formatCurrency(monthlySavings1Degree * 2)} monthly.
             </p>
           </div>
         </div>

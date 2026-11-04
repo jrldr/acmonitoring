@@ -102,11 +102,11 @@ export const GoogleSheetsModal: React.FC<GoogleSheetsModalProps> = ({
           <div className="mb-5 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
             <div>
               <div className="font-bold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 <span>Connected to Personal Google Sheet</span>
               </div>
               <div className="text-emerald-700 dark:text-emerald-400 text-[11px] mt-0.5">
-                {lastSyncedAt ? `Last synced: ${lastSyncedAt}` : 'Ready to push or pull data'}
+                {lastSyncedAt ? `Last synced at ${lastSyncedAt}` : 'Ready to push or pull data'}
               </div>
             </div>
 
