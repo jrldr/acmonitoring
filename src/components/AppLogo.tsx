@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import acMaterialIcon from '../assets/images/ac_material_icon_1793780920414.jpg';
+import acFlatIcon from '../assets/images/ac_flat_minimalist_icon_1793782384021.jpg';
 
 interface AppLogoProps {
   className?: string;
@@ -19,57 +19,45 @@ export const AppLogo: React.FC<AppLogoProps> = ({ className = '', size = 'md' })
 
   return (
     <div
-      className={`relative bg-[#0d121f] border border-indigo-500/25 dark:border-indigo-400/25 flex items-center justify-center text-white shadow-md shadow-indigo-950/40 shrink-0 overflow-hidden ${sizeClasses} ${className}`}
+      className={`relative bg-[#1c2260] border border-indigo-400/20 dark:border-indigo-400/30 flex items-center justify-center text-white shrink-0 overflow-hidden ${sizeClasses} ${className}`}
       title="AC Power Tracker"
     >
       {!imageError ? (
         <img
-          src={acMaterialIcon}
-          alt="AC Power Tracker Material Icon"
-          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+          src={acFlatIcon}
+          alt="AC Power Tracker Minimalist Flat Icon"
+          className="w-full h-full object-cover"
           onError={() => setImageError(true)}
         />
       ) : (
-        /* Material Design 3 Layered Vector: Elevated Air Conditioner + Energy Bolt */
+        /* Pure Minimalist Flat 2D Vector Graphic */
         <svg
-          viewBox="0 0 48 48"
+          viewBox="0 0 100 100"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full p-1"
+          className="w-full h-full"
           aria-label="AC Power Tracker"
         >
-          {/* Base Surface Squircle */}
-          <rect x="2" y="2" width="44" height="44" rx="12" fill="#1e1b4b" />
+          {/* Flat Indigo Background */}
+          <rect width="100" height="100" fill="#1c2260" />
+
+          {/* Minimalist White AC Unit Body */}
+          <rect x="18" y="28" width="46" height="44" rx="6" fill="#ffffff" />
           
-          {/* Top Unit Housing */}
-          <rect x="10" y="8" width="28" height="14" rx="4" fill="#06b6d4" fillOpacity="0.25" stroke="#38bdf8" strokeWidth="1.5" />
-          {/* Digital Temp Display */}
-          <rect x="18" y="11" width="12" height="7" rx="2" fill="#090d16" />
-          <text
-            x="24"
-            y="16.2"
-            fontSize="4.8"
-            fontWeight="bold"
-            fill="#38bdf8"
-            textAnchor="middle"
-            fontFamily="monospace"
-          >
-            21°
-          </text>
-          
-          {/* Main Air Flow Housing (Elevated Surface) */}
-          <rect x="8" y="19" width="32" height="21" rx="5" fill="#4338ca" />
-          <rect x="10" y="21" width="28" height="17" rx="3.5" fill="#0f172a" stroke="#6366f1" strokeWidth="1" />
-          
-          {/* Energy Bolt */}
+          {/* Inner Flat Dark Frame */}
+          <rect x="23" y="34" width="36" height="32" rx="3" fill="#1c2260" />
+
+          {/* Clean Flat Cyan Vent Slats */}
+          <rect x="26" y="38" width="30" height="4.5" rx="1.5" fill="#00e5ff" />
+          <rect x="26" y="45" width="30" height="4.5" rx="1.5" fill="#00e5ff" />
+          <rect x="26" y="52" width="30" height="4.5" rx="1.5" fill="#00e5ff" />
+          <rect x="26" y="59" width="30" height="4.5" rx="1.5" fill="#00e5ff" />
+
+          {/* Minimalist Flat Lightning Bolt */}
           <path
-            d="M24.5 22.5L21.5 27.5H24L23.5 31.5L26.5 26.5H24L24.5 22.5Z"
-            fill="#38bdf8"
+            d="M74 24L56 54H68L64 78L84 46H71L74 24Z"
+            fill="#ffffff"
           />
-          
-          {/* Material Airflow Louvers */}
-          <rect x="13" y="32" width="22" height="1.8" rx="0.9" fill="#06b6d4" />
-          <rect x="13" y="34.8" width="22" height="1.8" rx="0.9" fill="#38bdf8" />
         </svg>
       )}
     </div>
