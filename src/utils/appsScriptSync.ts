@@ -13,7 +13,7 @@ export const APPS_SCRIPT_TEMPLATE = `// === AC POWER TRACKER GOOGLE SHEET SYNC S
 
 function doGet(e) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var data = sheet.getDataRange().getValues();
+  var data = sheet.getDataRange().getDisplayValues();
   return ContentService.createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
 }
@@ -57,6 +57,72 @@ export const HEADERS = [
   'Payment',
   'Balance',
 ];
+
+/**
+ * Normalizes date strings from Google Sheets / CSV without timezone date shifts.
+ */
+export function normalizeSheetCutoffDate(raw: unknown): string {
+  if (!raw) return '';
+  let str = String(raw).trim();
+
+  // 1. If it's already a clean YYYY-MM-DD string, keep as-is!
+  if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+    return str;
+  }
+
+  // 2. If ISO string containing T (e.g. "2024-10-20T16:00:00.000Z")
+  // Google Apps Script converts 2024-10-21 00:00:00 (Asia/Manila) into 2024-10-20T16:00:00.000Z
+  if (str.includes('T')) {
+    const d = new Date(str);
+    if (!isNaN(d.getTime())) {
+      // Add 12 hours to account for UTC-to-local offset (e.g. 16:00 UTC = 00:00 next day)
+      const adjusted = new Date(d.getTime() + 12 * 3600 * 1000);
+      const year = adjusted.getUTCFullYear();
+      const month = String(adjusted.getUTCMonth() + 1).padStart(2, '0');
+      const day = String(adjusted.getUTCDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+  }
+
+  // 3. Handle slash formats e.g. "10/21/2024" or "2024/10/21" or "21/10/2024"
+  if (str.includes('/')) {
+    const parts = str.split('/');
+    if (parts.length === 3) {
+      if (parts[0].length === 4) {
+        // YYYY/MM/DD
+        return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+      } else {
+        let p1 = parseInt(parts[0], 10);
+        let p2 = parseInt(parts[1], 10);
+        let y = parts[2].length === 2 ? `20${parts[2]}` : parts[2];
+        if (!isNaN(p1) && !isNaN(p2)) {
+          if (p1 > 12) {
+            // DD/MM/YYYY
+            return `${y}-${String(p2).padStart(2, '0')}-${String(p1).padStart(2, '0')}`;
+          } else {
+            // MM/DD/YYYY
+            return `${y}-${String(p1).padStart(2, '0')}-${String(p2).padStart(2, '0')}`;
+          }
+        }
+      }
+    }
+  }
+
+  // 4. Fallback Date parsing
+  try {
+    const d = new Date(str);
+    if (!isNaN(d.getTime())) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+  } catch {
+    // keep raw string
+  }
+
+  return str;
+}
 
 /**
  * Validates Google Apps Script Web App URL format
@@ -105,27 +171,8 @@ export async function fetchRecordsFromAppsScript(scriptUrl: string): Promise<ACR
     const row = raw[i];
     if (!row || !row[dateIdx]) continue;
 
-    // Format date in YYYY-MM-DD preserving exact local date (avoiding UTC timezone shift)
-    let cutoffStr = String(row[dateIdx]).trim();
-    if (cutoffStr.includes('T')) {
-      const datePart = cutoffStr.split('T')[0];
-      if (/^\d{4}-\d{2}-\d{2}$/.test(datePart)) {
-        cutoffStr = datePart;
-      }
-    }
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(cutoffStr) && cutoffStr.length > 5) {
-      try {
-        const d = new Date(cutoffStr);
-        if (!isNaN(d.getTime())) {
-          const year = d.getFullYear();
-          const month = String(d.getMonth() + 1).padStart(2, '0');
-          const day = String(d.getDate()).padStart(2, '0');
-          cutoffStr = `${year}-${month}-${day}`;
-        }
-      } catch {
-        // keep raw string
-      }
-    }
+    // Use timezone-aware date normalization
+    const cutoffStr = normalizeSheetCutoffDate(row[dateIdx]);
 
     const rateStr = rateIdx !== -1 && row[rateIdx] !== undefined ? String(row[rateIdx]).trim() : '';
     const rateNum = rateStr && !isNaN(Number(rateStr)) ? Number(rateStr) : null;
