@@ -105,18 +105,25 @@ export async function fetchRecordsFromAppsScript(scriptUrl: string): Promise<ACR
     const row = raw[i];
     if (!row || !row[dateIdx]) continue;
 
-    // Format date in YYYY-MM-DD if Google Sheets converted it to a date string
+    // Format date in YYYY-MM-DD preserving exact local date (avoiding UTC timezone shift)
     let cutoffStr = String(row[dateIdx]).trim();
     if (cutoffStr.includes('T')) {
-      cutoffStr = cutoffStr.split('T')[0];
-    } else if (cutoffStr.length > 10) {
+      const datePart = cutoffStr.split('T')[0];
+      if (/^\d{4}-\d{2}-\d{2}$/.test(datePart)) {
+        cutoffStr = datePart;
+      }
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(cutoffStr) && cutoffStr.length > 5) {
       try {
         const d = new Date(cutoffStr);
         if (!isNaN(d.getTime())) {
-          cutoffStr = d.toISOString().split('T')[0];
+          const year = d.getFullYear();
+          const month = String(d.getMonth() + 1).padStart(2, '0');
+          const day = String(d.getDate()).padStart(2, '0');
+          cutoffStr = `${year}-${month}-${day}`;
         }
       } catch {
-        // keep string
+        // keep raw string
       }
     }
 

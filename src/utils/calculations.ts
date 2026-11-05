@@ -11,10 +11,14 @@ export function recalculateAllRecords(rawRecords: ACRecord[]): ACRecord[] {
   });
 
   let effectiveRatePrev = 0;
+  const results: ACRecord[] = [];
 
-  return sorted.map((row, i, arr) => {
-    const prevKWMonth = i > 0 ? Number(arr[i - 1].KW_Month) || 0 : 0;
-    const prevKWCutOff = i > 0 ? Number(arr[i - 1].KW_CutOff) || 0 : 0;
+  for (let i = 0; i < sorted.length; i++) {
+    const row = sorted[i];
+    const prevRow = i > 0 ? results[i - 1] : null;
+
+    const prevKWMonth = prevRow ? Number(prevRow.KW_Month) || 0 : 0;
+    const prevKWCutOff = prevRow ? Number(prevRow.KW_CutOff) || 0 : 0;
 
     const currKWCutOff = Number(row.KW_CutOff) || 0;
     const offsetDays = Number(row.OffsetDays) || 0;
@@ -26,15 +30,21 @@ export function recalculateAllRecords(rawRecords: ACRecord[]): ACRecord[] {
       daysStartToCutoff = 1;
     }
 
-    // KW_Statement = (prev_KW_Month - prev_KW_CutOff) + curr_KW_CutOff + (offset_days * (curr_KW_CutOff / days_start_to_cutoff))
+    // KW_Statement calculation:
+    // Carryover kWh from previous cycle cutoff to end of previous month = (prevKWMonth - prevKWCutOff)
+    // If prevKWMonth was unrecorded (0) or less than cutoff, carryover is 0
+    let carryOverKW = 0;
+    if (prevKWMonth > 0 && prevKWMonth >= prevKWCutOff) {
+      carryOverKW = prevKWMonth - prevKWCutOff;
+    }
     const offsetAdjustment = offsetDays * (currKWCutOff / daysStartToCutoff);
-    const kwStatementRaw = (prevKWMonth - prevKWCutOff) + currKWCutOff + offsetAdjustment;
+    const kwStatementRaw = carryOverKW + currKWCutOff + offsetAdjustment;
     const kwStatement = Math.round(kwStatementRaw * 100) / 100;
 
     // CycleDays
     let cycleDays = daysStartToCutoff;
-    if (i > 0) {
-      const prevTime = new Date(`${arr[i - 1].CutoffDate}T00:00:00`).getTime();
+    if (prevRow) {
+      const prevTime = new Date(`${prevRow.CutoffDate}T00:00:00`).getTime();
       const currTime = new Date(`${row.CutoffDate}T00:00:00`).getTime();
       const diffDays = Math.round(Math.abs(currTime - prevTime) / (86400 * 1000));
       cycleDays = diffDays > 0 ? diffDays : 1;
@@ -56,13 +66,13 @@ export function recalculateAllRecords(rawRecords: ACRecord[]): ACRecord[] {
     // AveCost_Day
     const aveCostDay = Math.round((bill / cycleDays) * 100) / 100;
 
-    // TotalDue & Balance
-    const prevBalance = i > 0 ? Number(arr[i - 1].Balance) || 0 : 0;
+    // TotalDue & Balance: ALWAYS use previous record's freshly calculated Balance!
+    const prevBalance = prevRow ? prevRow.Balance : 0;
     const totalDue = Math.round((bill + prevBalance) * 100) / 100;
     const payment = Number(row.Payment) || 0;
     const balance = Math.round((totalDue - payment) * 100) / 100;
 
-    return {
+    results.push({
       CutoffDate: row.CutoffDate,
       KW_CutOff: currKWCutOff,
       KW_Month: Number(row.KW_Month) || 0,
@@ -75,8 +85,10 @@ export function recalculateAllRecords(rawRecords: ACRecord[]): ACRecord[] {
       TotalDue: totalDue,
       Payment: payment,
       Balance: balance,
-    };
-  });
+    });
+  }
+
+  return results;
 }
 
 /**
