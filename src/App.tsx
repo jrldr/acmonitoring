@@ -66,7 +66,7 @@ export default function App() {
     } catch (e) {
       console.error('Error loading saved records:', e);
     }
-    return INITIAL_RECORDS;
+    return [];
   });
 
   // Save to safe storage whenever records change
@@ -143,7 +143,7 @@ export default function App() {
       } else {
         setSyncToast({
           type: 'error',
-          message: 'The connected Google Sheet has no billing records yet. Use "Push to Sheet" to populate it.',
+          message: 'The connected Google Sheet has no billing records yet. Use "Push to Sheet" to populate it or log entries.',
         });
       }
     } catch (err) {
@@ -157,15 +157,31 @@ export default function App() {
     }
   }, [isSheetsConnected, sheetsScriptUrl]);
 
-  // Save new script URL
+  // Save new script URL and auto-pull if valid
   const handleSaveScriptUrl = (url: string) => {
     setSheetsScriptUrl(url);
     safeSetItem(SHEETS_URL_KEY, url);
     if (isValidScriptUrl(url)) {
       setSyncToast({
         type: 'success',
-        message: 'Google Sheet connected! You can now Push or Pull your records anytime.',
+        message: 'Google Sheet connected! Pulling records...',
       });
+      // Auto-pull immediately after connecting
+      fetchRecordsFromAppsScript(url)
+        .then((sheetRecords) => {
+          if (sheetRecords && sheetRecords.length > 0) {
+            setRecords(sheetRecords);
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            setLastSyncedAt(timeStr);
+            setSyncToast({
+              type: 'success',
+              message: `Connected & loaded ${sheetRecords.length} records from Google Sheet!`,
+            });
+          }
+        })
+        .catch((err) => {
+          console.error('Auto pull failed:', err);
+        });
     } else if (!url) {
       safeRemoveItem(SHEETS_URL_KEY);
       setSyncToast({
@@ -269,12 +285,12 @@ export default function App() {
     }
   };
 
-  // Reset to seed dataset
+  // Clear all data
   const handleResetData = () => {
-    setRecords(INITIAL_RECORDS);
+    setRecords([]);
     safeRemoveItem(STORAGE_KEY);
     if (isSheetsConnected && autoSyncSheets) {
-      handlePushToSheet(INITIAL_RECORDS);
+      handlePushToSheet([]);
     }
   };
 

@@ -11,13 +11,16 @@ interface StatCardsProps {
 export const StatCards: React.FC<StatCardsProps> = ({ latestRecord, previousRecord }) => {
   if (!latestRecord) {
     return (
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-4 mb-6">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <div
-            key={i}
-            className="p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800/80 animate-pulse h-28 sm:h-32"
-          />
-        ))}
+      <div className="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800/80 p-6 sm:p-8 mb-6 text-center shadow-xs">
+        <div className="max-w-md mx-auto py-2">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-3">
+            <Zap className="w-6 h-6" />
+          </div>
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">No Billing Records Loaded</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Connect your Google Sheet using the "Sync Sheet" button at the top, or click "New Entry" to start entering your electricity billing cycles.
+          </p>
+        </div>
       </div>
     );
   }
