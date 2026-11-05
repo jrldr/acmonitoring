@@ -135,9 +135,53 @@ export const TrendChart: React.FC<TrendChartProps> = ({ records, onSelectRecord 
       </div>
 
       {/* Interactive Bar Chart Visualization with Y-Axis Gridlines */}
-      <div className="relative pt-4 pb-2">
+      <div className="relative pt-16 pb-2">
+        {/* Floating Unclipped Tooltip Card positioned above bars in parent container */}
+        {activeRecord && hoveredIndex !== null && (
+          <div
+            className="absolute top-0 z-30 bg-slate-900/95 text-white dark:bg-slate-800/95 dark:text-slate-100 p-3 rounded-xl shadow-2xl text-xs whitespace-nowrap border border-slate-700/90 min-w-[210px] pointer-events-none backdrop-blur-md animate-in fade-in-0 duration-150 transition-all"
+            style={{
+              left: `${Math.max(20, Math.min(80, ((hoveredIndex + 0.5) / filteredRecords.length) * 100))}%`,
+              transform: 'translateX(-50%)',
+            }}
+          >
+            <div className="font-bold text-indigo-400 mb-1.5 pb-1 border-b border-slate-700 flex items-center justify-between gap-3">
+              <span>{formatMonthLabel(activeRecord.CutoffDate)}</span>
+              <span className="text-[10px] text-slate-400 font-mono">{activeRecord.CutoffDate}</span>
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 font-mono text-[11px]">
+              <div className="flex justify-between gap-2">
+                <span className="font-sans text-slate-400">Statement:</span>
+                <strong className="text-white tabular-nums">{formatKwh(activeRecord.KW_Statement)} kWh</strong>
+              </div>
+              <div className="flex justify-between gap-2">
+                <span className="font-sans text-slate-400">Rate:</span>
+                <strong className="text-white tabular-nums">
+                  ₱{Number(activeRecord.RatePerKwh || (activeRecord.KW_Statement > 0 ? activeRecord.Bill / activeRecord.KW_Statement : 0)).toFixed(2)}
+                </strong>
+              </div>
+              <div className="flex justify-between gap-2">
+                <span className="font-sans text-slate-400">Bill:</span>
+                <strong className="text-white tabular-nums">{formatCurrency(activeRecord.Bill)}</strong>
+              </div>
+              <div className="flex justify-between gap-2">
+                <span className="font-sans text-slate-400">Cycle Days:</span>
+                <strong className="text-white tabular-nums">{activeRecord.CycleDays} days</strong>
+              </div>
+              <div className="flex justify-between gap-2 col-span-2 pt-0.5 border-t border-slate-800">
+                <span className="font-sans text-slate-400">Cost / Day:</span>
+                <strong className="text-emerald-400 tabular-nums">{formatCurrency(activeRecord.AveCost_Day)}</strong>
+              </div>
+            </div>
+            <div className="mt-1.5 pt-1 border-t border-slate-700 text-[10px] text-indigo-300 font-sans flex items-center justify-between">
+              <span>Click bar to inspect full details</span>
+              <span>➔</span>
+            </div>
+          </div>
+        )}
+
         {/* Subtle Horizontal Background Gridlines */}
-        <div className="absolute inset-0 top-4 bottom-8 flex flex-col justify-between pointer-events-none opacity-40">
+        <div className="absolute inset-0 top-16 bottom-8 flex flex-col justify-between pointer-events-none opacity-40">
           {yTicks.slice(0, 4).map((tick, i) => (
             <div key={i} className="w-full border-b border-slate-200 dark:border-slate-800/60 flex items-center justify-between">
               <span className="text-[9px] font-mono text-slate-400 dark:text-slate-500 tabular-nums select-none -translate-y-2">
@@ -188,67 +232,26 @@ export const TrendChart: React.FC<TrendChartProps> = ({ records, onSelectRecord 
                 onMouseLeave={() => setHoveredIndex(null)}
                 onClick={() => onSelectRecord(r)}
               >
-                {/* Floating Tooltip with Full Telemetry Breakdown */}
-                {isHovered && (
-                  <div className="absolute bottom-full mb-3 z-30 bg-slate-900 text-white dark:bg-slate-800/95 dark:text-slate-100 p-3 rounded-xl shadow-2xl text-xs whitespace-nowrap border border-slate-700/80 min-w-[170px] pointer-events-none backdrop-blur-md animate-in fade-in-0 duration-150">
-                    <div className="font-bold text-indigo-400 mb-1.5 pb-1 border-b border-slate-700 flex items-center justify-between gap-2">
-                      <span>{formatMonthLabel(r.CutoffDate)}</span>
-                      <span className="text-[10px] text-slate-400 font-mono">{r.CutoffDate}</span>
-                    </div>
-                    <div className="space-y-1 font-mono text-[11px]">
-                      <div className="flex justify-between gap-3 text-slate-300">
-                        <span className="font-sans text-slate-400">Statement:</span>
-                        <strong className="text-white tabular-nums">{formatKwh(r.KW_Statement)} kWh</strong>
-                      </div>
-                      <div className="flex justify-between gap-3 text-slate-300">
-                        <span className="font-sans text-slate-400">Rate:</span>
-                        <strong className="text-white tabular-nums">
-                          ₱{Number(r.RatePerKwh || (r.KW_Statement > 0 ? r.Bill / r.KW_Statement : 0)).toFixed(2)}
-                        </strong>
-                      </div>
-                      <div className="flex justify-between gap-3 text-slate-300">
-                        <span className="font-sans text-slate-400">Cycle Bill:</span>
-                        <strong className="text-white tabular-nums">{formatCurrency(r.Bill)}</strong>
-                      </div>
-                      <div className="flex justify-between gap-3 text-slate-300">
-                        <span className="font-sans text-slate-400">Cycle Days:</span>
-                        <strong className="text-white tabular-nums">{r.CycleDays} days</strong>
-                      </div>
-                      <div className="flex justify-between gap-3 text-slate-300">
-                        <span className="font-sans text-slate-400">Cost/Day:</span>
-                        <strong className="text-white tabular-nums">{formatCurrency(r.AveCost_Day)}</strong>
-                      </div>
-                      {momDeltaPct !== null && (
-                        <div className="flex justify-between gap-3 pt-1 border-t border-slate-700/80">
-                          <span className="font-sans text-slate-400">MoM Delta:</span>
-                          <span
-                            className={`font-bold tabular-nums flex items-center gap-0.5 ${
-                              momDeltaPct > 0 ? 'text-rose-400' : 'text-emerald-400'
-                            }`}
-                          >
-                            {momDeltaPct > 0 ? '+' : ''}
-                            {momDeltaPct.toFixed(1)}%
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="mt-2 pt-1.5 border-t border-slate-700 text-[10px] text-indigo-300 font-sans flex items-center justify-between">
-                      <span>Click to view breakdown</span>
-                      <span>➔</span>
-                    </div>
-                  </div>
-                )}
 
-                {/* Numerical Value Label Above Bar */}
-                <span
-                  className={`text-[10px] sm:text-[11px] font-mono tabular-nums mb-1.5 transition-all duration-150 ${
-                    isHovered
-                      ? 'text-indigo-600 dark:text-indigo-400 font-bold scale-110'
-                      : 'text-slate-500 dark:text-slate-400'
-                  }`}
-                >
-                  {metric === 'kwh' ? Math.round(rawVal) : `₱${Math.round(rawVal)}`}
-                </span>
+                {/* Numerical Value Label & Peak MAX Badge Stack Above Bar */}
+                <div className="flex flex-col items-center justify-end mb-1 min-h-[28px]">
+                  {isPeak && (
+                    <span className="text-[8px] font-mono font-extrabold uppercase px-1 py-0.5 rounded bg-amber-500/20 text-amber-600 dark:text-amber-400 tracking-wider border border-amber-500/30 leading-none mb-0.5">
+                      MAX
+                    </span>
+                  )}
+                  <span
+                    className={`text-[10px] sm:text-[11px] font-mono tabular-nums transition-all duration-150 leading-tight ${
+                      isHovered
+                        ? 'text-indigo-600 dark:text-indigo-400 font-bold scale-110'
+                        : isPeak
+                        ? 'text-amber-600 dark:text-amber-400 font-bold'
+                        : 'text-slate-500 dark:text-slate-400'
+                    }`}
+                  >
+                    {metric === 'kwh' ? Math.round(rawVal) : `₱${Math.round(rawVal)}`}
+                  </span>
+                </div>
 
                 {/* Elegant Rounded Bar */}
                 <div
@@ -262,13 +265,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({ records, onSelectRecord 
                       : 'bg-gradient-to-t from-indigo-500/75 to-indigo-400/90 dark:from-indigo-600/70 dark:to-indigo-500/80 group-hover:from-indigo-600 group-hover:to-indigo-400'
                   }`}
                   style={{ height: `${heightPct}%` }}
-                >
-                  {isPeak && (
-                    <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[9px] font-mono font-bold text-amber-600 dark:text-amber-400 tracking-tight">
-                      MAX
-                    </span>
-                  )}
-                </div>
+                />
 
                 {/* Bottom Month Label */}
                 <span
